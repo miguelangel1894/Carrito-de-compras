@@ -14,6 +14,10 @@ $items.addEventListener('click',e =>{
     addCarrito(e)
 })
 
+$cards.addEventListener('click', e =>{
+    btnAccion(e)
+})
+
 const fetchData = async () => {
     try {
         let res = await fetch('api.json')
@@ -87,6 +91,8 @@ const pintarFooter = () =>{
 
     if(Object.values(carrito).length === 0){
         $footer.innerHTML = `<th scope="row" colspan="5">Carrito vacío - comience a comprar!</th>`
+
+        return
     }
 
     const nCantidad = Object.values(carrito).reduce((acc, {cantidad})=> acc + cantidad ,0)
@@ -99,4 +105,34 @@ const pintarFooter = () =>{
     $fragment.appendChild(clone)
     $footer.appendChild($fragment)
 
+    const btnVaciar = document.getElementById('vaciar-carrito')
+    btnVaciar.addEventListener('click', ()=>{
+    carrito = {}  
+    pintarCarrito()  
+    })
+
 }
+
+const btnAccion = (e) =>{
+    if(e.target.classList.contains('btn-info')){
+        console.log(carrito[e.target.dataset.id])
+        const producto = carrito[e.target.dataset.id]
+        producto.cantidad++
+        carrito[e.target.dataset.id] = {...producto}
+        pintarCarrito()
+    }
+
+    if(e.target.classList.contains('btn-danger')){
+        console.log(carrito[e.target.dataset.id])
+        const producto = carrito[e.target.dataset.id]
+        producto.cantidad--
+        if(producto.cantidad === 0){
+            delete carrito[e.target.dataset.id]
+        }
+        pintarCarrito()
+    }
+
+    e.stopPropagation()
+}
+
+
